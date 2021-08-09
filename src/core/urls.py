@@ -8,6 +8,7 @@ from django.urls import re_path, include
 
 router = DefaultRouter()
 router.register('profile', views.ProfileViewSet)
+router.register('file_manager', views.FileManagerViewSet)
 
 
 urlpatterns = [

@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'champ.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.postgresql"),
-        "NAME": os.environ.get("SQL_DATABASE", 'champ'),
+        "NAME": os.environ.get("SQL_DATABASE", 'chp'),
         "USER": os.environ.get("SQL_USER", "postgres"),
         "PASSWORD": os.environ.get("SQL_PASSWORD", "password"),
         "HOST": os.environ.get("SQL_HOST", "localhost"),
@@ -156,3 +156,6 @@ CORS_ORIGIN_WHITELIST = [
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+
+AUTH_USER_MODEL = 'core.User'

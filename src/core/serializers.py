@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User
+from .models import User, FileManager
 from django.contrib.auth import authenticate
 
 from rest_framework import exceptions
@@ -21,7 +21,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'first_name', 'last_name', 'password', 'phone', 'country')
+        fields = ('id', 'email', 'first_name', 'last_name', 'password', 'phone')
 
     def create(self, validated_data):
         instance = User.objects.create_user(**validated_data)
@@ -65,3 +65,10 @@ class LoginSerializer(serializers.Serializer):
             )
 
         return user.get_data()
+
+
+class FileManagerSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FileManager
+        fields = ('id', 'profile', 'video')

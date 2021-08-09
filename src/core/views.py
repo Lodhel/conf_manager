@@ -7,6 +7,7 @@ from django.db import transaction
 
 from . import serializers
 from . import models
+from src.main import MainManager
 
 
 class ProfileViewSet(viewsets.ModelViewSet):
@@ -51,3 +52,15 @@ class LoginAPIView(APIView):
         return JsonResponse(
             models.User.objects.get(id=serializer.validated_data['id']).get_data()
         )
+
+
+class FileManagerViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.FileManagerSerializer
+    queryset = models.FileManager.objects.all()
+
+    @transaction.atomic()
+    def create(self, request, *args, **kwargs):
+        instance = super().create(request)
+        result = MainManager(instance.data['video'].split('/')[-1]).get_text_from_video()
+
+        return JsonResponse({'data': result})

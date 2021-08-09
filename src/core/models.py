@@ -62,7 +62,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         blank=False
     )
     phone = models.CharField(max_length=255)
-    country = models.CharField(max_length=255)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     authorization = models.TextField()
@@ -83,7 +82,6 @@ class User(AbstractBaseUser, PermissionsMixin):
             'last_name': self.last_name,
             'email': self.email,
             'phone': self.phone,
-            'country': self.country,
             'authorization': self.authorization,
         }
 
@@ -134,8 +132,8 @@ class FileManager(models.Model):
     video = models.FileField()
     audio = models.CharField(max_length=255, null=True)
     full_text = models.TextField()
-    short_text = models.CharField(max_length=255)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    short_text = models.CharField(max_length=255, null=True)
+    profile = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.pk)
