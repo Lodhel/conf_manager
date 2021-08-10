@@ -2,7 +2,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework import viewsets
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.db import transaction
 
 from . import serializers
@@ -58,9 +58,25 @@ class FileManagerViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.FileManagerSerializer
     queryset = models.FileManager.objects.all()
 
-    @transaction.atomic()
+    def list(self, request, *args, **kwargs):
+        profile_id = request.query_params.get("profile", None)
+        file_instance = models.FileManager.objects.filter(profile=int(profile_id)).first()
+
+        if not profile_id:
+            raise serializers.exceptions.AuthenticationFailed()
+
+        response = HttpResponse(
+            file_instance.full_text,
+            content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        )
+        response['Content-Disposition'] = 'attachment; filename=file.docx'
+        return response
+
     def create(self, request, *args, **kwargs):
         instance = super().create(request)
-        result = MainManager(instance.data['video'].split('/')[-1]).get_text_from_video()
+        file_instance = models.FileManager.objects.filter(profile=instance.data['profile']).first()
+        result = MainManager().get_text_from_video(instance.data['video'].split('/')[-1])
+        file_instance.full_text = result
+        file_instance.save()
 
         return JsonResponse({'data': result})
