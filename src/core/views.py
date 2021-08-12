@@ -7,6 +7,8 @@ from django.db import transaction
 
 from . import serializers
 from . import models
+from .short_text import make_sort_text
+
 from src.main import MainManager
 
 
@@ -75,8 +77,12 @@ class FileManagerViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         instance = super().create(request)
         file_instance = models.FileManager.objects.filter(profile=instance.data['profile']).first()
-        result = MainManager().get_text_from_video(instance.data['video'].split('/')[-1])
-        file_instance.full_text = result
+        full_text = MainManager().get_text_from_video(instance.data['video'].split('/')[-1])
+
+        short_text = make_sort_text(full_text)
+        file_instance.full_text = full_text
+        if short_text:
+            file_instance.short_text = short_text[0]
         file_instance.save()
 
-        return JsonResponse({'data': result})
+        return JsonResponse({'full_text': full_text, 'short_text': short_text})
